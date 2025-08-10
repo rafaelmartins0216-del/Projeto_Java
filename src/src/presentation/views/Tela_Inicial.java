@@ -34,11 +34,14 @@ public class Tela_Inicial extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu2_Vendas = new javax.swing.JMenu();
+        jMenuItem3_Venda = new javax.swing.JMenuItem();
         jMenu3_Relatorios = new javax.swing.JMenu();
+        jMenuItem3_Relatorio = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tela Inicial");
         setPreferredSize(new java.awt.Dimension(800, 600));
+        setResizable(false);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         jMenu1_Cadastros.setText("Produtos");
@@ -62,9 +65,27 @@ public class Tela_Inicial extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1_Cadastros);
 
         jMenu2_Vendas.setText("Vendas");
+
+        jMenuItem3_Venda.setText("Vendas");
+        jMenuItem3_Venda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3_VendaActionPerformed(evt);
+            }
+        });
+        jMenu2_Vendas.add(jMenuItem3_Venda);
+
         jMenuBar1.add(jMenu2_Vendas);
 
         jMenu3_Relatorios.setText("Relatórios");
+
+        jMenuItem3_Relatorio.setText("Relatorios");
+        jMenuItem3_Relatorio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3_RelatorioActionPerformed(evt);
+            }
+        });
+        jMenu3_Relatorios.add(jMenuItem3_Relatorio);
+
         jMenuBar1.add(jMenu3_Relatorios);
 
         setJMenuBar(jMenuBar1);
@@ -80,30 +101,14 @@ public class Tela_Inicial extends javax.swing.JFrame {
         new Alterações().setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void jMenuItem3_VendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3_VendaActionPerformed
+        new Vendas().setVisible(true);
+    }//GEN-LAST:event_jMenuItem3_VendaActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Tela_Inicial().setVisible(true));
-    }
+    private void jMenuItem3_RelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3_RelatorioActionPerformed
+         new Relatorios().setVisible(true);
+    }//GEN-LAST:event_jMenuItem3_RelatorioActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1_Cadastros;
@@ -112,5 +117,7 @@ public class Tela_Inicial extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3_Relatorio;
+    private javax.swing.JMenuItem jMenuItem3_Venda;
     // End of variables declaration//GEN-END:variables
 }

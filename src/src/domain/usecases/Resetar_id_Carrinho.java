@@ -13,8 +13,10 @@ import java.time.LocalDateTime;
  */
 public class Resetar_id_Carrinho {
     
+    
     //duração do dia para computar (peguei o codigo do git hub)
     //precisa importar as classes para funcionar 
+    //Ele reseta o Id_carrinho a cada 24 horas para ter controle dos itens vendidos
     public static void executar() {
         LocalDateTime resetarT = Carrinho.getResetarT(); // usando getter
         Duration duracao = Duration.between(resetarT, LocalDateTime.now());

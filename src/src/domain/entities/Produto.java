@@ -13,6 +13,20 @@ import java.time.LocalDateTime;
 public class Produto {
     
     
+    //atributo para chave primeira do banco de dados
+    private int id_produto;
+
+    //métodos set and gett para id
+        public int getId_produto() {
+        return id_produto;
+        }
+
+        public void setId_produto(int id_produto) {
+        this.id_produto = id_produto;
+        }
+        
+        
+    
     //declarando os produtos presente na biscoitaria
     private String nome;
     private double preco;
@@ -37,12 +51,22 @@ public class Produto {
     //Toda vez que declarar um novo produto vai ser obrigado a passar essas médias 
     //criando construtor para adicionar um produto do zero
     //Lembrar criar exeções para lidar com erros ao inserir dados 
-    public Produto(String nome, double preco, int qtd_estoque ,LocalDateTime dataHora, String caminhoImagem){
+    public Produto(String nome, double preco, int qtd_estoque, String caminhoImagem){
         this.nome=nome;
         this.preco=preco;
         this.qtd_estoque=qtd_estoque;
         this.dataHora=LocalDateTime.now(); //pega a hora exata da venda
         this.caminhoImagem=caminhoImagem;  //quando formor declarar um produto temos que passar o caminho da imagem
+    }
+    
+    
+    
+    public Produto(int id, String nome, double preco, int quantidade, String caminhoImagem) {
+        this.id_produto = id;
+        this.nome = nome;
+        this.preco = preco;
+        this.qtd_estoque = quantidade;
+        this.caminhoImagem = caminhoImagem;
     }
     
     
