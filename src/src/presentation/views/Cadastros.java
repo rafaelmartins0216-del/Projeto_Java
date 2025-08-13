@@ -10,6 +10,21 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+//classes para  importar um arquivo
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import javax.swing.JFileChooser;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JOptionPane;
+
+
+
 //importando a classe de exeção das variaveis do menu
 import src.Exceptions.Validador_Produto_Exptions;
 
@@ -161,13 +176,16 @@ public class Cadastros extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField2_Quantidade_em_Estoque, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton1_Cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton1_Cadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel6_Imagem_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(165, 165, 165)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1_Cancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1_Cadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel6_Imagem_Produto, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1_selecionar_Imagem, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(46, Short.MAX_VALUE))
         );
@@ -179,20 +197,48 @@ public class Cadastros extends javax.swing.JFrame {
     private void jButton1_selecionar_ImagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1_selecionar_ImagemActionPerformed
        
         
-        JFileChooser jFileChooser=new JFileChooser();
-        FileNameExtensionFilter filtado=new FileNameExtensionFilter("JPG , PNG & GIF", "JPG","PNG","GIF");
-        jFileChooser.setFileFilter(filtado);
-        
-        int IMG_Mostrar=jFileChooser.showOpenDialog(this);
-        
-        if (IMG_Mostrar == JFileChooser.APPROVE_OPTION) {
-        url_imagem = jFileChooser.getSelectedFile().getPath();
+        JFileChooser jFileChooser = new JFileChooser();
+    FileNameExtensionFilter filtrado = new FileNameExtensionFilter("JPG, PNG & GIF", "JPG", "PNG", "GIF");
+    jFileChooser.setFileFilter(filtrado);
+    
+    int IMG_Mostrar = jFileChooser.showOpenDialog(this);
+    
+    if (IMG_Mostrar == JFileChooser.APPROVE_OPTION) {
+        try {
+            // 1. Pega o arquivo que o usuário selecionou
+            File arquivoSelecionado = jFileChooser.getSelectedFile();
 
-        // Redimensiona a imagem de acordo com o tamanho do JLabel
-        ImageIcon icon = new ImageIcon(new ImageIcon(url_imagem).getImage()
-                .getScaledInstance(jLabel6_Imagem_Produto.getWidth(), jLabel6_Imagem_Produto.getHeight(), Image.SCALE_SMOOTH));
+            // 2. Define a pasta de destino dentro do seu projeto
+            String pastaDestino = System.getProperty("user.dir") + "/src/imgs/";
+            
+            // Garante que a pasta de destino exista. Se não, cria ela.
+            File diretorio = new File(pastaDestino);
+            if (!diretorio.exists()) {
+                diretorio.mkdirs(); 
+            }
 
-        jLabel6_Imagem_Produto.setIcon(icon); // exibe a imagem no JLabel
+            // 3. Cria o caminho completo de destino para a nova imagem
+            Path destino = Paths.get(pastaDestino + arquivoSelecionado.getName());
+
+            // 4. Copia o arquivo selecionado para a pasta de destino
+            // REPLACE_EXISTING substitui o arquivo se já existir um com o mesmo nome
+            Files.copy(arquivoSelecionado.toPath(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+            // 5. ATUALIZA a variável url_imagem com o CAMINHO RELATIVO que será salvo no banco
+            // Este é o passo mais importante!
+            url_imagem = "imgs/" + arquivoSelecionado.getName(); 
+
+            // 6. Exibe a imagem no JLabel (usando o caminho original, pois o arquivo acabou de ser lido de lá)
+            ImageIcon icon = new ImageIcon(new ImageIcon(arquivoSelecionado.getPath()).getImage()
+                    .getScaledInstance(jLabel6_Imagem_Produto.getWidth(), jLabel6_Imagem_Produto.getHeight(), Image.SCALE_SMOOTH));
+
+            jLabel6_Imagem_Produto.setIcon(icon);
+
+        } catch (IOException ex) {
+            // É uma boa prática tratar exceções, caso a cópia do arquivo falhe
+            JOptionPane.showMessageDialog(this, "Erro ao salvar a imagem!", "Erro", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
     }
     }//GEN-LAST:event_jButton1_selecionar_ImagemActionPerformed
 

@@ -60,7 +60,7 @@ public class ProdutoDao {
         return null;
     }
 
-    // READ - Listar todos os produtos
+    // READ - Listar todos os produtos do banco
     public List<Produto> listarTodos() {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT * FROM produto";
@@ -84,6 +84,34 @@ public class ProdutoDao {
         }
         return produtos;
     }
+    
+    // READ - Buscar produtos pelo nome (ou parte dele na teoria)
+    public List<Produto> buscarPorNome(String nome) {
+        List<Produto> produtos = new ArrayList<>();
+        String sql = "SELECT * FROM produto WHERE nome_produto LIKE ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + nome + "%"); // busca por nome parcial
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                produtos.add(new Produto(
+                    rs.getInt("id_produto"),
+                    rs.getString("nome_produto"),
+                    rs.getDouble("preco"),
+                    rs.getInt("quantidade"),
+                    rs.getString("caminho_imagem")
+                ));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar produtos: " + e.getMessage());
+        }
+
+        return produtos;
+}
 
     // UPDATE - Atualizar produto
     public boolean atualizar(Produto produto) {

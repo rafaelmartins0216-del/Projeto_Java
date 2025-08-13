@@ -6,9 +6,8 @@ package src.presentation.views;
 
 
 //importando a classe validador_Produto para a conclução das alterações
-import javax.swing.JOptionPane;
-import src.Exceptions.Validador_Produto_Exptions;
-import src.domain.usecases.CadastrarProduto;
+import javax.swing.DefaultListModel;
+import src.domain.entities.Produto;
 /**
  *
  * @author Rafael Martins
@@ -17,6 +16,11 @@ public class Alterações extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Alterações.class.getName());
 
+    //Criando uma lista defalt para pegar os produtos 
+    //exibir a lista no Jlist1
+    DefaultListModel<Produto> modeloLista = new DefaultListModel<>();
+
+    
     /**
      * Creates new form Alterações
      */
@@ -35,8 +39,6 @@ public class Alterações extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList1_alterações = new javax.swing.JList<>();
         jPanel1 = new javax.swing.JPanel();
         jButton1_Concluir_alteracoes = new javax.swing.JButton();
         jButton1_Deletar = new javax.swing.JButton();
@@ -48,21 +50,18 @@ public class Alterações extends javax.swing.JFrame {
         jTextField1_estoque = new javax.swing.JTextField();
         jLabel6_Imagem_Produto = new javax.swing.JLabel();
         jButton1_selecionar_Imagem = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        jTextField1_Buscar = new javax.swing.JTextField();
+        jToggleButton1_Buscar = new javax.swing.JToggleButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1_listaProdutos = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Alterações");
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Produto que deseja buscar:");
-
-        jList1_alterações.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane2.setViewportView(jList1_alterações);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED)));
 
@@ -71,11 +70,6 @@ public class Alterações extends javax.swing.JFrame {
         jButton1_Concluir_alteracoes.setForeground(new java.awt.Color(0, 0, 0));
         jButton1_Concluir_alteracoes.setText("Concluir Alterações");
         jButton1_Concluir_alteracoes.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        jButton1_Concluir_alteracoes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1_Concluir_alteracoesActionPerformed(evt);
-            }
-        });
 
         jButton1_Deletar.setBackground(new java.awt.Color(204, 0, 0));
         jButton1_Deletar.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
@@ -86,27 +80,28 @@ public class Alterações extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel2.setText("Nome:");
 
+        jTextField1_Nome.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel3.setText("Preço:");
+
+        jTextField1_Preco.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         jLabel4.setText("Quantidade em Estoque:");
 
+        jTextField1_estoque.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+
         jLabel6_Imagem_Produto.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Imagem", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
         jButton1_selecionar_Imagem.setText("Selecionar Imagem...");
-        jButton1_selecionar_Imagem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1_selecionar_ImagemActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
+                .addGap(17, 17, 17)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -125,12 +120,12 @@ public class Alterações extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jTextField1_estoque)))
                             .addComponent(jLabel6_Imagem_Produto, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 52, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1_Deletar, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(143, 143, 143)
-                        .addComponent(jButton1_Concluir_alteracoes, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1_Concluir_alteracoes, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,7 +145,7 @@ public class Alterações extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField1_estoque, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6_Imagem_Produto, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+                .addComponent(jLabel6_Imagem_Produto, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1_selecionar_Imagem)
                 .addGap(12, 12, 12)
@@ -159,6 +154,19 @@ public class Alterações extends javax.swing.JFrame {
                     .addComponent(jButton1_Concluir_alteracoes, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
+
+        jTextField1_Buscar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextField1_Buscar.setToolTipText("Digite o nome do Produto");
+
+        jToggleButton1_Buscar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jToggleButton1_Buscar.setText("Buscar");
+
+        jList1_listaProdutos.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(jList1_listaProdutos);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -169,37 +177,33 @@ public class Alterações extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE))
-                        .addGap(28, 28, 28)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(14, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField1_Buscar, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jToggleButton1_Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addGap(4, 4, 4)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField1_Buscar, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(jToggleButton1_Buscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
-                .addContainerGap(22, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1_Concluir_alteracoesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1_Concluir_alteracoesActionPerformed
-        
-    }//GEN-LAST:event_jButton1_Concluir_alteracoesActionPerformed
-
-    private void jButton1_selecionar_ImagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1_selecionar_ImagemActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1_selecionar_ImagemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -235,12 +239,13 @@ public class Alterações extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6_Imagem_Produto;
-    private javax.swing.JList<String> jList1_alterações;
+    private javax.swing.JList<String> jList1_listaProdutos;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField1_Buscar;
     private javax.swing.JTextField jTextField1_Nome;
     private javax.swing.JTextField jTextField1_Preco;
     private javax.swing.JTextField jTextField1_estoque;
+    private javax.swing.JToggleButton jToggleButton1_Buscar;
     // End of variables declaration//GEN-END:variables
 }
