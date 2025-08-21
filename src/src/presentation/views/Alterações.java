@@ -4,35 +4,132 @@
  */
 package src.presentation.views;
 
-
-//importando a classe validador_Produto para a conclução das alterações
 import javax.swing.DefaultListModel;
-import src.domain.entities.Produto;
+import java.util.List;
+
 /**
  *
  * @author Rafael Martins
  */
 public class Alterações extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Alterações.class.getName());
 
-    //Criando uma lista defalt para pegar os produtos 
-    //exibir a lista no Jlist1
-    DefaultListModel<Produto> modeloLista = new DefaultListModel<>();
+    // Model dinâmico para a JList (mostra "id - nome")
+    private DefaultListModel<String> listaModel = new DefaultListModel<>();
+    private Integer produtoSelecionadoId = null;
 
-    
-    /**
-     * Creates new form Alterações
-     */
     public Alterações() {
         initComponents();
         setLocationRelativeTo(null);
+
+        jList1_listaProdutos.setModel(listaModel);
+        carregarListaProdutos();
+
+        jToggleButton1_Buscar.addActionListener(e -> filtrarListaProdutos(jTextField1_Buscar.getText()));
+
+        // Ao clicar em um item da lista, preencher os campos da direita
+        jList1_listaProdutos.addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) return;
+            String selecionado = jList1_listaProdutos.getSelectedValue();
+            if (selecionado == null || selecionado.isBlank()) return;
+
+            // Espera formato "id - nome"
+            try {
+                String idStr = selecionado.split(" - ", 2)[0].trim();
+                int id = Integer.parseInt(idStr);
+                produtoSelecionadoId = id;
+
+                var dao = new src.persistence.ProdutoDao();
+                var p = dao.buscarPorId(id);  
+                
+                if (p != null) {
+                    jTextField1_Nome.setText(p.getNome());
+                    jTextField1_Preco.setText(String.valueOf(p.getPreco()));
+                    jTextField1_estoque.setText(String.valueOf(p.getQtd_estoque()));
+                    // if (p.getCaminhoImagem() != null) { jLabel6_Imagem_Produto.setIcon(new ImageIcon(p.getCaminhoImagem())); }
+                }
+            } catch (Exception ex) {
+                logger.log(java.util.logging.Level.SEVERE, "Erro ao carregar produto selecionado", ex);
+                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar produto: " + ex.getMessage());
+            }
+        });
+
+        jButton1_Deletar.addActionListener(e -> {
+            if (produtoSelecionadoId == null) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Selecione um produto na lista primeiro.");
+                return;
+            }
+            int opc = javax.swing.JOptionPane.showConfirmDialog(
+                    this,
+                    "Tem certeza que deseja deletar o produto ID " + produtoSelecionadoId + "?",
+                    "Confirmar exclusão",
+                    javax.swing.JOptionPane.YES_NO_OPTION
+            );
+            if (opc != javax.swing.JOptionPane.YES_OPTION) return;
+
+            try {
+                var dao = new src.persistence.ProdutoDao();
+                boolean ok = dao.deletar(produtoSelecionadoId);
+                if (ok) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Produto deletado com sucesso!");
+                    produtoSelecionadoId = null;
+                    limparCampos();
+                    carregarListaProdutos();
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Não foi possível deletar.");
+                }
+            } catch (Exception ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao deletar: " + ex.getMessage());
+            }
+        });
+    }
+
+    // Lista todos os produtos do banco e joga no model
+    private void carregarListaProdutos() {
+        listaModel.clear();
+        try {
+            var dao = new src.persistence.ProdutoDao();
+            List<src.domain.entities.Produto> produtos = dao.listarTodos(); // ← implemente no ProdutoDao caso não exista
+            for (var p : produtos) {
+                // Mostra "id - nome" na lista
+                listaModel.addElement(p.getId_produto() + " - " + p.getNome());
+            }
+        } catch (Exception e) {
+            logger.log(java.util.logging.Level.SEVERE, "Erro ao carregar produtos", e);
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar produtos: " + e.getMessage());
+        }
+    }
+
+    // Busca por nome parcial; se termo vazio, lista tudo
+    private void filtrarListaProdutos(String termo) {
+        listaModel.clear();
+        try {
+            var dao = new src.persistence.ProdutoDao();
+            List<src.domain.entities.Produto> produtos =
+                    (termo == null || termo.isBlank())
+                            ? dao.listarTodos()
+                            : dao.buscarPorNome(termo);
+
+            for (var p : produtos) {
+                listaModel.addElement(p.getId_produto() + " - " + p.getNome());
+            }
+        } catch (Exception e) {
+            logger.log(java.util.logging.Level.SEVERE, "Erro ao buscar produtos", e);
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao buscar: " + e.getMessage());
+        }
+    }
+
+    private void limparCampos() {
+        jTextField1_Nome.setText("");
+        jTextField1_Preco.setText("");
+        jTextField1_estoque.setText("");
+        jLabel6_Imagem_Produto.setIcon(null);
+        jList1_listaProdutos.clearSelection();
     }
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * Creates new form Alterações
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -161,11 +258,6 @@ public class Alterações extends javax.swing.JFrame {
         jToggleButton1_Buscar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jToggleButton1_Buscar.setText("Buscar");
 
-        jList1_listaProdutos.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(jList1_listaProdutos);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -211,9 +303,6 @@ public class Alterações extends javax.swing.JFrame {
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {

@@ -12,6 +12,19 @@ public class Relatorios extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Relatorios.class.getName());
 
+    
+    // ===== Campos da tela de Relatórios =====
+    private javax.swing.JTextField txtInicio;  
+    private javax.swing.JTextField txtFim;     
+    private javax.swing.JButton btnBuscar;
+
+    private javax.swing.JTable tblVendas;
+    private javax.swing.JTable tblTopProdutos;
+    private javax.swing.JLabel lblFaturamento;
+
+    private javax.swing.table.DefaultTableModel vendasModel;
+    private javax.swing.table.DefaultTableModel topModel;
+
     /**
      * Creates new form Alterações
      */
@@ -20,6 +33,89 @@ public class Relatorios extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    private void montarUIRelatorios() {
+        txtInicio = new javax.swing.JTextField(16);
+        txtFim = new javax.swing.JTextField(16);
+        btnBuscar = new javax.swing.JButton("Buscar");
+        lblFaturamento = new javax.swing.JLabel("Faturamento: 0,00");
+
+        // Defaults: hoje 00:00 até hoje 23:59
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        String hoje = now.toLocalDate().toString();
+        txtInicio.setText(hoje + " 00:00:00");
+        txtFim.setText(hoje + " 23:59:59");
+
+        vendasModel = new javax.swing.table.DefaultTableModel(
+            new Object[]{"ID", "Data/Hora", "Total bruto", "Desconto", "Total líquido"}, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tblVendas = new javax.swing.JTable(vendasModel);
+
+        topModel = new javax.swing.table.DefaultTableModel(
+            new Object[]{"ID Prod.", "Produto", "Qtd vendida", "Valor total"}, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tblTopProdutos = new javax.swing.JTable(topModel);
+
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
+
+        javax.swing.JPanel filtros = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        filtros.add(new javax.swing.JLabel("Início:")); filtros.add(txtInicio);
+        filtros.add(new javax.swing.JLabel("Fim:")); filtros.add(txtFim);
+        filtros.add(btnBuscar); filtros.add(lblFaturamento);
+
+        jPanel1.add(filtros);
+        jPanel1.add(new javax.swing.JLabel("Vendas no período:"));
+        jPanel1.add(new javax.swing.JScrollPane(tblVendas));
+        jPanel1.add(new javax.swing.JLabel("Top produtos:"));
+        jPanel1.add(new javax.swing.JScrollPane(tblTopProdutos));
+
+        btnBuscar.addActionListener(e -> carregarRelatorios());
+
+    }
+
+    private void carregarRelatorios() {
+        try {
+            String inicio = txtInicio.getText().trim();
+            String fim = txtFim.getText().trim();
+
+            src.persistence.RelatorioDao dao = new src.persistence.RelatorioDao();
+
+            // Vendas por período
+            var vendas = dao.listarVendasPorPeriodo(inicio, fim);
+            vendasModel.setRowCount(0);
+            for (var row : vendas) {
+                vendasModel.addRow(new Object[]{
+                    row.get("id_venda"),
+                    row.get("data_hora"),
+                    String.format("%.2f", row.get("total_bruto")),
+                    String.format("%.2f", row.get("desconto")),
+                    String.format("%.2f", row.get("total_liquido"))
+                });
+            }
+
+            // Top produtos (top 10)
+            var top = dao.produtosMaisVendidos(10, inicio, fim);
+            topModel.setRowCount(0);
+            for (var row : top) {
+                topModel.addRow(new Object[]{
+                    row.get("id_produto"),
+                    row.get("nome_produto"),
+                    row.get("total_qtd"),
+                    String.format("%.2f", row.get("total_valor"))
+                });
+            }
+
+            // Faturamento total
+            double fat = dao.faturamentoTotal(inicio, fim);
+            lblFaturamento.setText(String.format("Faturamento: %.2f", fat));
+        } catch (Exception ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Erro ao carregar relatórios", ex);
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
+        }
+    }
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -65,7 +161,8 @@ public class Relatorios extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
-
+        
+        montarUIRelatorios();
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents

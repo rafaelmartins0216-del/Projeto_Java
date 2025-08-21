@@ -31,7 +31,7 @@ public class Produto {
     private String nome;
     private double preco;
     private int qtd_estoque;
-    private LocalDateTime dataHora; //para ver a que horas foi vendido , para o relatorio
+    private LocalDateTime dataHora; 
     
     //Adicionando campo de imagem aqui
     private String caminhoImagem;
@@ -56,7 +56,7 @@ public class Produto {
         this.preco=preco;
         this.qtd_estoque=qtd_estoque;
         this.dataHora=LocalDateTime.now(); //pega a hora exata da venda
-        this.caminhoImagem=caminhoImagem;  //quando formor declarar um produto temos que passar o caminho da imagem
+        this.caminhoImagem=caminhoImagem;  //quando formos declarar um produto temos que passar o caminho da imagem
     }
     
     

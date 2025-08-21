@@ -5,10 +5,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ProdutoDao {
 
     private Connection getConnection() throws SQLException {
-        // Ajuste o caminho para o seu banco SQLite
         String url = "jdbc:sqlite:banco_de_dados/banco_sqlite.db";
         return DriverManager.getConnection(url);
     }
