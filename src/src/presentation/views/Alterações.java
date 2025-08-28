@@ -3,7 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package src.presentation.views;
-
+import java.awt.Image;
+import javax.swing.ImageIcon;
 import javax.swing.DefaultListModel;
 import java.util.List;
 
@@ -30,59 +31,66 @@ public class Alterações extends javax.swing.JFrame {
 
         // Ao clicar em um item da lista, preencher os campos da direita
         jList1_listaProdutos.addListSelectionListener(e -> {
+            
             if (e.getValueIsAdjusting()) return;
-            String selecionado = jList1_listaProdutos.getSelectedValue();
-            if (selecionado == null || selecionado.isBlank()) return;
+    String selecionado = jList1_listaProdutos.getSelectedValue();
+    if (selecionado == null || selecionado.isBlank()) return;
 
-            // Espera formato "id - nome"
-            try {
-                String idStr = selecionado.split(" - ", 2)[0].trim();
-                int id = Integer.parseInt(idStr);
-                produtoSelecionadoId = id;
+    try {
+        String idStr = selecionado.split(" - ", 2)[0].trim();
+        int id = Integer.parseInt(idStr);
+        produtoSelecionadoId = id;
 
-                var dao = new src.persistence.ProdutoDao();
-                var p = dao.buscarPorId(id);  
-                
-                if (p != null) {
-                    jTextField1_Nome.setText(p.getNome());
-                    jTextField1_Preco.setText(String.valueOf(p.getPreco()));
-                    jTextField1_estoque.setText(String.valueOf(p.getQtd_estoque()));
-                    // if (p.getCaminhoImagem() != null) { jLabel6_Imagem_Produto.setIcon(new ImageIcon(p.getCaminhoImagem())); }
-                }
-            } catch (Exception ex) {
-                logger.log(java.util.logging.Level.SEVERE, "Erro ao carregar produto selecionado", ex);
-                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao carregar produto: " + ex.getMessage());
-            }
-        });
+        var dao = new src.persistence.ProdutoDao();
+        var p = dao.buscarPorId(id);
 
-        jButton1_Deletar.addActionListener(e -> {
-            if (produtoSelecionadoId == null) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Selecione um produto na lista primeiro.");
-                return;
-            }
-            int opc = javax.swing.JOptionPane.showConfirmDialog(
-                    this,
-                    "Tem certeza que deseja deletar o produto ID " + produtoSelecionadoId + "?",
-                    "Confirmar exclusão",
-                    javax.swing.JOptionPane.YES_NO_OPTION
-            );
-            if (opc != javax.swing.JOptionPane.YES_OPTION) return;
+        if (p != null) {
+            jTextField1_Nome.setText(p.getNome());
+            jTextField1_Preco.setText(String.valueOf(p.getPreco()));
+            jTextField1_estoque.setText(String.valueOf(p.getQtd_estoque()));
 
-            try {
-                var dao = new src.persistence.ProdutoDao();
-                boolean ok = dao.deletar(produtoSelecionadoId);
-                if (ok) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Produto deletado com sucesso!");
-                    produtoSelecionadoId = null;
-                    limparCampos();
-                    carregarListaProdutos();
+            String caminhoRelativo = p.getcaminhoImagem();
+            
+            // --- INÍCIO DO CÓDIGO DE DEPURAÇÃO ---
+            System.out.println("------------------------------------");
+            System.out.println("PASSO 1: Caminho vindo do banco de dados: '" + caminhoRelativo + "'");
+
+            if (caminhoRelativo != null && !caminhoRelativo.isEmpty()) {
+                String caminhoAbsoluto = System.getProperty("user.dir") + "/" + caminhoRelativo;
+                System.out.println("PASSO 2: Caminho absoluto que foi montado: '" + caminhoAbsoluto + "'");
+
+                // Vamos verificar se o arquivo realmente existe nesse caminho
+                java.io.File arquivoImagem = new java.io.File(caminhoAbsoluto);
+                System.out.println("PASSO 3: O arquivo existe nesse caminho? -> " + arquivoImagem.exists());
+
+                if (arquivoImagem.exists()) {
+                    ImageIcon imagemIcon = new ImageIcon(caminhoAbsoluto);
+                    
+                    Image img = imagemIcon.getImage().getScaledInstance(
+                        jLabel6_Imagem_Produto.getWidth(),
+                        jLabel6_Imagem_Produto.getHeight(),
+                        Image.SCALE_SMOOTH
+                    );
+                    jLabel6_Imagem_Produto.setIcon(new ImageIcon(img));
+                    System.out.println("PASSO 4: Imagem carregada e definida no componente!");
                 } else {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Não foi possível deletar.");
+                    // Se o arquivo não existe, limpamos a imagem e avisamos
+                    jLabel6_Imagem_Produto.setIcon(null);
+                    System.out.println("PASSO 4: ERRO - O arquivo de imagem NÃO FOI ENCONTRADO no caminho acima.");
                 }
-            } catch (Exception ex) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Erro ao deletar: " + ex.getMessage());
+                
+            } else {
+                jLabel6_Imagem_Produto.setIcon(null);
+                System.out.println("PASSO 1.1: O produto não tem um caminho de imagem no banco.");
             }
-        });
+            System.out.println("------------------------------------");
+
+        }
+    } catch (Exception ex) {
+        // Se der qualquer outro erro, ele será mostrado aqui
+        ex.printStackTrace();
+    }
+});
     }
 
     // Lista todos os produtos do banco e joga no model

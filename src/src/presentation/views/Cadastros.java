@@ -209,7 +209,7 @@ public class Cadastros extends javax.swing.JFrame {
             File arquivoSelecionado = jFileChooser.getSelectedFile();
 
             // 2. Define a pasta de destino dentro do seu projeto
-            String pastaDestino = System.getProperty("user.dir") + "/src/imgs/";
+            String pastaDestino = System.getProperty("user.dir") + "/imgs/";
             
             // Garante que a pasta de destino exista. Se não, cria ela.
             File diretorio = new File(pastaDestino);

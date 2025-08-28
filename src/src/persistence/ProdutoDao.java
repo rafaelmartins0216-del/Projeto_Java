@@ -4,6 +4,8 @@ import src.domain.entities.Produto;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.InputStream;
+
 
 
 public class ProdutoDao {
@@ -33,6 +35,27 @@ public class ProdutoDao {
             return false;
         }
     }
+    
+    public void cadastrarComImagem(Produto p, InputStream imagemStream) {
+    String sql = "INSERT INTO produtos (nome, preco, qtd_estoque, imagem_dados) VALUES (?, ?, ?, ?)";
+    try (Connection conn = this.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setString(1, p.getNome());
+        pstmt.setDouble(2, p.getPreco());
+        pstmt.setInt(3, p.getQtd_estoque());
+        
+        if (imagemStream != null) {
+            pstmt.setBlob(4, imagemStream); // Usa setBlob para salvar a imagem
+        } else {
+            pstmt.setNull(4, java.sql.Types.BLOB);
+        }
+        
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        // Tratar exceção
+    }
+}
 
     // READ - Buscar produto por ID
     public Produto buscarPorId(int id) {
